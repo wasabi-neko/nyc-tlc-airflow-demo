@@ -61,7 +61,7 @@ def upload_url_to_s3(url: str, bucket_name: str, s3_key: str):
             res = requests.get(url, stream=True)
             res.raise_for_status()
             client.upload_fileobj(BytesIO(res.content), bucket_name, s3_key)
-            return {'url': url, status: UploadStatus.UPLOADED}
+            return {'url': url, 'status': UploadStatus.UPLOADED}
         else:
             return {'url': url, 'status': UploadStatus.SKIPPED}
     except Exception as e:
