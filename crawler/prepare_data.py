@@ -88,8 +88,8 @@ if __name__ == "__main__":
         secret = config.get("SECRET_KEY")
 
     # year, month
-    year_range = range(2009, 2010)
-    month_range = range(1, 7)
+    year_range = range(2009, 2024)
+    month_range = range(1, 13)
     url_template = Template('https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_$year-$month.parquet')
     urls = [url_template.substitute(year=str(y), month=f"{m:02d}") for y in year_range for m in month_range]
     bucket_name = "nyc-tlc-demo"
