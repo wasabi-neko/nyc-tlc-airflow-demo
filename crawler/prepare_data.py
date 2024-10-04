@@ -1,5 +1,7 @@
-import boto3
+import boto3.session
+import boto3, botocore
 import json
+import botocore.config
 import requests
 import logging
 from io import BytesIO
@@ -12,23 +14,39 @@ logging.basicConfig(
     format='[%(asctime)s][%(levelname)s][%(funcName)s]: %(message)s'
 )
 
-def upload_url_to_s3(url: str, client, bucket_name: str, s3_key: str):
+def create_s3_client():
+    session = boto3.session.Session()
+
+    client_config = botocore.config.Config(
+        retries={"max_attempts": 10},
+        max_pool_connections=50,
+    )
+    client = session.client(
+        's3',
+        config=client_config,
+        aws_access_key_id=access_key,
+        aws_secret_access_key=secret)
+    return client
+
+def upload_url_to_s3(url: str, bucket_name: str, s3_key: str):
     try:
         res = requests.get(url, stream=True)
         res.raise_for_status()
+
+        client = create_s3_client()
         client.upload_fileobj(BytesIO(res.content), bucket_name, s3_key)
         return (url, True)
     except Exception as e:
         logging.error(f"Upload filaed, file:{s3_key}, url:{url}, {e}")
         return (url, False)
 
-def upload_urls_parallel(urls: list[str], client, bucket_name: str):
+def upload_urls_parallel(urls: list[str], bucket_name: str):
     # (url, client, bucket_name, key)
-    inputs = [(url, client, bucket_name, url.split('/')[-1]) for url in urls]
+    inputs = [(url, bucket_name, url.split('/')[-1]) for url in urls]
     # Transform fomr "a list of tuple" to "a tuple of list"
     inputs = tuple(map(list, zip(*inputs)))
     # tqdm threadPoolExecutor wrapper
-    results = thread_map(upload_url_to_s3, *inputs, desc="Uploading", unit="file")
+    results = thread_map(upload_url_to_s3, *inputs, max_workers=32,desc="Uploading", unit="file")
     return results
 
 
@@ -40,12 +58,6 @@ if __name__ == "__main__":
         access_key = config.get("ACCESS_KEY")
         secret = config.get("SECRET_KEY")
 
-    # client
-    s3_client = boto3.client(
-        's3',
-        aws_access_key_id=access_key,
-        aws_secret_access_key=secret)
-
     # year, month
     year_range = range(2009, 2010)
     month_range = range(1, 7)
@@ -54,5 +66,5 @@ if __name__ == "__main__":
     bucket_name = "nyc-tlc-demo"
 
     logging.info("Start Upload file")
-    results = upload_urls_parallel(urls, s3_client, bucket_name)
+    results = upload_urls_parallel(urls, bucket_name)
     logging.info(f"Finished Uploading; result: {results}")
