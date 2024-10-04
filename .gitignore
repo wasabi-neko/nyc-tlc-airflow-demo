@@ -1,1 +1,2 @@
 crawler/aws_secret_config.json
+crawler/*.log

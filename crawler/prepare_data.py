@@ -1,9 +1,16 @@
 import boto3
 import json
 import requests
+import logging
 from io import BytesIO
 from tqdm.contrib.concurrent import thread_map
 from string import Template
+
+logging.basicConfig(
+    filename="./prepare_data.log",
+    level=logging.INFO,
+    format='[%(asctime)s][%(levelname)s][%(funcName)s]: %(message)s'
+)
 
 def upload_url_to_s3(url: str, client, bucket_name: str, s3_key: str):
     try:
@@ -12,7 +19,7 @@ def upload_url_to_s3(url: str, client, bucket_name: str, s3_key: str):
         client.upload_fileobj(BytesIO(res.content), bucket_name, s3_key)
         return (url, True)
     except Exception as e:
-        print(f"failed upload {url}, Error: {e}")
+        logging.error(f"Upload filaed, file:{s3_key}, url:{url}, {e}")
         return (url, False)
 
 def upload_urls_parallel(urls: list[str], client, bucket_name: str):
@@ -41,10 +48,11 @@ if __name__ == "__main__":
 
     # year, month
     year_range = range(2009, 2010)
-    month_range = range(1, 13)
+    month_range = range(1, 7)
     url_template = Template('https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_$year-$month.parquet')
     urls = [url_template.substitute(year=str(y), month=f"{m:02d}") for y in year_range for m in month_range]
     bucket_name = "nyc-tlc-demo"
 
+    logging.info("Start Upload file")
     results = upload_urls_parallel(urls, s3_client, bucket_name)
-    print(results)
+    logging.info(f"Finished Uploading; result: {results}")
