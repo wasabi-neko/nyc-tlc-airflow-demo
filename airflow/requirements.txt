@@ -1,0 +1,4 @@
+apache-airflow-providers-snowflake==5.7.1
+apache-airflow-providers-amazon==8.29.0
+pandas==2.1.4
+numpy==1.26.4

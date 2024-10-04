@@ -1,2 +1,4 @@
 crawler/aws_secret_config.json
 crawler/*.log
+airflow/logs
+airflow/.env
