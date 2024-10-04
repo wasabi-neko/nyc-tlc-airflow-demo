@@ -1,0 +1,7 @@
+{
+    "ACCESS_KEY": "access_key_placeholder",
+    "SECRET_KEY": "secrect_key_placeholder",
+    "SNOWFLAKE_USER": "snowflake",
+    "SNOWFLAKE_PASS": "password-method",
+    "SNOWFLAKE_ACCOUNT": "remenber-to-use-dash-as-seperater"
+}

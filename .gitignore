@@ -1,4 +1,8 @@
-crawler/aws_secret_config.json
+secrects.json
 crawler/*.log
+
+airflow/*.log
 airflow/logs
 airflow/.env
+
+airflow/dags/__pycache__
