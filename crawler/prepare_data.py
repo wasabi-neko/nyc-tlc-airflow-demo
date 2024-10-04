@@ -1,10 +1,8 @@
 import boto3
 import json
 import requests
-import concurrent.futures
 from io import BytesIO
-from tqdm import tqdm
-from tqdm.contrib.concurrent import thread_map, process_map
+from tqdm.contrib.concurrent import thread_map
 from string import Template
 
 def upload_url_to_s3(url: str, client, bucket_name: str, s3_key: str):
