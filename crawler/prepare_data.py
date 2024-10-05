@@ -27,6 +27,8 @@ class UploadStatus(Enum):
     UPLOADED = 1
     FILAED = 2
 
+# Create S3 Client for every Thread
+#   According to the AWS Boto3 guild, boto session client is NOT thread-safe
 def create_s3_client():
     session = boto3.session.Session()
 
