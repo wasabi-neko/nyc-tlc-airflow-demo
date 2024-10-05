@@ -1,3 +1,5 @@
+alter session set query_tag='nyc-tlc-demo-extable';
+
 desc table super_extable;
 
 use warehouse compute_large;

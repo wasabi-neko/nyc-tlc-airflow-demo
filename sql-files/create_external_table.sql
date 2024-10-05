@@ -1,3 +1,5 @@
+alter session set query_tag='nyc-tlc-demo-extable';
+
 -- Create external table with INFER_SCHEMA
 create external table all_ex_table
     using template (
