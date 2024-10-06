@@ -41,33 +41,58 @@ from (
         to_date(regexp_substr(metadata$filename, '\\d{4}-\\d{2}'), 'YYYY-MM'),
 
         -- pickup_datetime
-        to_date(concat(
-            coalesce(CAST(GET_IGNORE_CASE($1, 'TPEP_PICKUP_DATETIME') AS VARCHAR(16777216)), ''),
-            coalesce(CAST(GET_IGNORE_CASE($1, 'TRIP_PICKUP_DATETIME') AS VARCHAR(16777216)), ''),
-            coalesce(CAST(GET_IGNORE_CASE($1, 'PICKUP_DATETIME') AS VARCHAR(16777216))     , '')
-        )),
+        to_date(
+            CAST(
+                coalesce(
+                    get_ignore_case($1, 'TPEP_PICKUP_DATETIME'),
+                    get_ignore_case($1, 'TPRP_PICKUP_DATETIME'),
+                    get_ignore_case($1, 'PICKUP_DATETIME')
+                )
+            AS varchar)
+        ),
 
         -- dropoff_datetime
-        to_date(concat(
-            coalesce(CAST(GET_IGNORE_CASE($1, 'TPEP_DROPOFF_DATETIME') AS VARCHAR(16777216)), ''),
-            coalesce(CAST(GET_IGNORE_CASE($1, 'TRIP_DROPOFF_DATETIME') AS VARCHAR(16777216)), ''),
-            coalesce(CAST(GET_IGNORE_CASE($1, 'DROPOFF_DATETIME') AS VARCHAR(16777216))     , '')
-        )),
+        to_date(
+            CAST(
+                coalesce(
+                    get_ignore_case($1, 'TPEP_DROPOFF_DATETIME'),
+                    get_ignore_case($1, 'TRIP_DROPOFF_DATETIME'),
+                    get_ignore_case($1, 'DROPOFF_DATETIME')
+                )
+            AS varchar)
+        ),
         (CAST(GET_IGNORE_CASE($1, 'PASSENGER_COUNT') AS int)),
         (CAST(GET_IGNORE_CASE($1, 'TRIP_DISTANCE') AS FLOAT)),
 
         -- start_lon
-        coalesce(CAST(GET_IGNORE_CASE($1, 'START_LON') AS FLOAT), 0) +
-        coalesce(CAST(GET_IGNORE_CASE($1, 'PICKUP_LONGITUDE') AS FLOAT), 0),
+        (CAST(
+            coalesce(
+                GET_IGNORE_CASE($1, 'START_LON'),
+                GET_IGNORE_CASE($1, 'PICKUP_LONGITUDE')
+            ) AS FLOAT
+        )),
+
         -- start_lat
-        coalesce(CAST(GET_IGNORE_CASE($1, 'START_LAT') AS FLOAT), 0) +
-        coalesce(CAST(GET_IGNORE_CASE($1, 'PICKUP_LATITUDE') AS FLOAT), 0),
+        (CAST(
+            coalesce(
+                GET_IGNORE_CASE($1, 'START_LAT'),
+                GET_IGNORE_CASE($1, 'PICKUP_LATITUDE')
+            ) AS FLOAT
+        )),
         -- end_lon
-        coalesce(CAST(GET_IGNORE_CASE($1, 'END_LON') AS FLOAT), 0) +
-        coalesce(CAST(GET_IGNORE_CASE($1, 'DROPOFF_LONGITUDE') AS FLOAT), 0),
+        (CAST(
+            coalesce(
+                GET_IGNORE_CASE($1, 'END_LON'),
+                GET_IGNORE_CASE($1, 'DROPOFF_LONGITUDE')
+            ) AS FLOAT
+        )),
         -- end_lat
-        coalesce(CAST(GET_IGNORE_CASE($1, 'END_LAT') AS FLOAT), 0) +
-        coalesce(CAST(GET_IGNORE_CASE($1, 'DROPOFF_LATITUDE') AS FLOAT), 0),
+        (CAST(
+            coalesce(
+                GET_IGNORE_CASE($1, 'END_LAT'),
+                GET_IGNORE_CASE($1, 'DROPOFF_LATITUDE')
+            ) AS FLOAT
+        )),
 
         -- locatoin id
         CAST(GET_IGNORE_CASE($1, 'PULOCATIONID') AS NUMBER(38,0)),
