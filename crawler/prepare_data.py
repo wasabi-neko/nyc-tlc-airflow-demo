@@ -99,16 +99,16 @@ if __name__ == "__main__":
     yellow_name_parser = tripdata_parser_gen('trip-data/yellow/')
 
     green_trip_data_template = "https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_%Y-%m.parquet"
-    green_urls = pd.date_range(start='2013-08', end='2013-09', freq='MS').strftime(green_trip_data_template)
+    green_urls = pd.date_range(start='2013-08', end='2024-07', freq='MS').strftime(green_trip_data_template)
     green_name_parser = tripdata_parser_gen('trip-data/green/')
 
     fhv_tripdata_template = "https://d37ci6vzurychx.cloudfront.net/trip-data/fhv_tripdata_%Y-%m.parquet"
-    fhv_urls = pd.date_range(start='2015-01', end='2015-02', freq='MS').strftime(fhv_tripdata_template)
+    fhv_urls = pd.date_range(start='2015-01', end='2024-07', freq='MS').strftime(fhv_tripdata_template)
     fhv_name_parser = tripdata_parser_gen('trip-data/fhv/')
     # from 2015-01
 
     fhvhv_tripdata_template = "https://d37ci6vzurychx.cloudfront.net/trip-data/fhvhv_tripdata_%Y-%m.parquet"
-    fhvhv_urls = pd.date_range(start='2019-02', end='2019-03', freq='MS').strftime(fhvhv_tripdata_template)
+    fhvhv_urls = pd.date_range(start='2019-02', end='2024-07', freq='MS').strftime(fhvhv_tripdata_template)
     fhvhv_name_parser = tripdata_parser_gen('trip-data/fhvhv/')
     # from 2019-02
 
