@@ -38,9 +38,22 @@ nyc-tlc-demo
 
 ## Workflow
 
+Method1: Copy data from external table
+
 ```
 copy_from_s3: from external table to table
 transformation 1: unify the column naming
 transformation 2: join taxi_zone_lookup with locationID
 merge_all_table: merge all from yellow, green, fhv
+```
+
+Method2: Copy file to internal stage first, then create table from internal stage
+
+```
+copy file to internal stage from external stage
+create table from internal stage
+transformation 1: unify the column naming
+transformation 2: join taxi_zone_lookup with locationID
+merge_all_table: merge all from yellow, green, fhv
+remove file in local stage
 ```
