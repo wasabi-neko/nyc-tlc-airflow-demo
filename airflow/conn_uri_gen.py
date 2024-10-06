@@ -35,7 +35,6 @@ def gen_uri(conn):
     env_key = f"AIRFLOW_CONN_{conn.conn_id.upper()}"
     conn_uri = conn.get_uri()
     print(f"{env_key}={conn_uri}")
-    # AIRFLOW_CONN_SAMPLE_AWS_CONNECTION=aws://AKIAIOSFODNN7EXAMPLE:wJalrXUtnFEMI%2FK7MDENG%2FbPxRfiCYEXAMPLEKEY@/?region_name=eu-central-1
 
     os.environ[env_key] = conn_uri
     print(conn.test_connection())  # Validate connection credentials.
