@@ -14,6 +14,7 @@ from tqdm.contrib.concurrent import thread_map
 parser = argparse.ArgumentParser()
 parser.add_argument('--debug', action='store_true', help='log in debug mode.')
 parser.add_argument('--overwrite', action='store_true', help='overwrite existing file in S3 bueckt.')
+parser.add_argument('--list', action='store_true', help='list the urls only. do not donwload and uploads')
 args = parser.parse_args()
 
 logging.basicConfig(
@@ -81,13 +82,7 @@ def upload_urls_parallel(urls: list[str], bucket_name: str):
 
 
 if __name__ == "__main__":
-    print(f"with arg: debug: {args.debug}, overwrite: {args.overwrite}")
-
-    # load crediential
-    with open('../secrects.json') as file:
-        config = json.load(file)
-        access_key = config.get("AWS_ACCESS_KEY")
-        secret = config.get("AWS_SECRET_KEY")
+    print(args)
 
     # year, month
     bucket_name = "nyc-tlc-demo"
@@ -95,6 +90,16 @@ if __name__ == "__main__":
     yellow_trip_data_template = "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_%Y-%m.parquet"
     urls = pd.date_range(start='2009-1', end='2024-07', freq='MS').strftime(yellow_trip_data_template)
 
+    if args.list:
+        # list the file only and end the program
+        print(urls)
+        exit(0)
+
+    # load crediential
+    with open('../secrects.json') as file:
+        config = json.load(file)
+        access_key = config.get("AWS_ACCESS_KEY")
+        secret = config.get("AWS_SECRET_KEY")
 
     logging.info("Start Upload file")
     results = upload_urls_parallel(urls, bucket_name)
