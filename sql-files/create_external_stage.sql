@@ -10,10 +10,15 @@ DESC INTEGRATION s3_integration;
 
 
 -- Create External Stage
-
 create DATABASE nyc_tlc;
+
 use nyc_tlc.public;
 CREATE or REPLACE STAGE s3_stage
     URL = 's3://nyc-tlc-demo'
     STORAGE_INTEGRATION = s3_integration;
 list @s3_stage;
+
+CREATE or REPLACE STAGE yellow_trip
+    URL = 's3://nyc-tlc-demo/trip-data/yellow'
+    STORAGE_INTEGRATION = s3_integration;
+list @yellow_trip;

@@ -1,9 +1,8 @@
 alter session set query_tag='nyc-tlc-demo-extable';
 
-desc table super_extable;
 
 use warehouse compute_large;
-CREATE TABLE final_table AS
+CREATE TABLE yellow_final AS
 SELECT
     START_DATE,
     VENDOR_ID, vendor_name
@@ -13,4 +12,4 @@ SELECT
     start_lon, start_lat, end_lon, end_lat,
     PULOCATIONID, DOLOCATIONID,
     EXTRA, TIP_AMOUNT, AIRPORT_FEE
-from super_extable;
+from yellow_super_extable;

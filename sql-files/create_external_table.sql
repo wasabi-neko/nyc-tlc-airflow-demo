@@ -1,28 +1,29 @@
 alter session set query_tag='nyc-tlc-demo-extable';
 
 -- Create external table with INFER_SCHEMA
-create external table all_ex_table
+create external table yellow_external
     using template (
         SELECT ARRAY_AGG(OBJECT_CONSTRUCT(*)) FROM TABLE(
             INFER_SCHEMA(
-                LOCATION=>'@s3_stage',
+                LOCATION=>'@yellow_trip',
                 FILE_FORMAT=>'my_parquet_format',
                 IGNORE_CASE => TRUE
             )
         )
     )
-    location = @s3_stage,
+    location = @yellow_trip,
     file_format = my_parquet_format
     auto_refresh = false;
 
 -- Check the DDL
-SELECT GET_DDL('TABLE', 'all_ex_table');
+SELECT GET_DDL('TABLE', 'yellow_external');
+
 
 -- After reading the DDL from auto-generated schema,
 -- Create the our final external table with conditions
-create or replace external table super_extable(
+create or replace external table yellow_super_extable(
 --  not  sure the mapping of the vendor id
-    START_DATE date AS to_date(substr(metadata$filename, 17, 7), 'YYYY-MM'),
+    START_DATE date AS to_date(regexp_substr(metadata$filename, '\\d{4}-\\d{2}'), 'YYYY-MM'),
 	VENDOR_ID VARCHAR(256) AS (
         concat(
             coalesce(CAST(GET_IGNORE_CASE($1, 'VENDOR_ID') AS VARCHAR(256)), ''),
@@ -118,8 +119,7 @@ create or replace external table super_extable(
 	RATE_CODE VARIANT AS (CAST(GET_IGNORE_CASE($1, 'RATE_CODE') AS VARIANT)),
 	RATECODEID VARIANT AS (CAST(GET_IGNORE_CASE($1, 'RATECODEID') AS VARIANT))
 )
-PARTITION BY (START_DATE)
-location=@S3_STAGE/
-auto_refresh=false
+location=@YELLOW_TRIP/
+auto_refresh=true
 file_format=my_parquet_format
 ;
