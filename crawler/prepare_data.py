@@ -1,3 +1,5 @@
+from pprint import pp
+from typing import Callable, List, Dict
 from enum import Enum
 import boto3.session
 import boto3, botocore
@@ -71,15 +73,20 @@ def upload_url_to_s3(url: str, bucket_name: str, s3_key: str):
         logging.error(f"Upload filaed, file:{s3_key}, url:{url}, {e}")
         return {'url': url, 'status': UploadStatus.FILAED}
 
-def upload_urls_parallel(urls: list[str], bucket_name: str):
+def upload_urls_parallel(urls: list[str], bucket_name: str, file_name_parser: Callable[[str], str]) -> List[Dict]:
     # (url, client, bucket_name, key)
-    inputs = [(url, bucket_name, url.split('/')[-1]) for url in urls]
+    inputs = [(url, bucket_name, file_name_parser(url)) for url in urls]
     # Transform fomr "a list of tuple" to "a tuple of list"
     inputs = tuple(map(list, zip(*inputs)))
     # tqdm threadPoolExecutor wrapper
     results = thread_map(upload_url_to_s3, *inputs, max_workers=32,desc="Uploading", unit="file")
     return results
 
+
+def tripdata_parser_gen(prefix: str)-> Callable[[str], str]:
+    def _parser(url: str)->str:
+        return prefix + url.split('/')[-1]
+    return _parser
 
 if __name__ == "__main__":
     print(args)
@@ -88,11 +95,26 @@ if __name__ == "__main__":
     bucket_name = "nyc-tlc-demo"
 
     yellow_trip_data_template = "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_%Y-%m.parquet"
-    urls = pd.date_range(start='2009-1', end='2024-07', freq='MS').strftime(yellow_trip_data_template)
+    yellow_urls = pd.date_range(start='2009-01', end='2024-07', freq='MS').strftime(yellow_trip_data_template)
+    yellow_name_parser = tripdata_parser_gen('trip-data/yellow/')
 
+    green_trip_data_template = "https://d37ci6vzurychx.cloudfront.net/trip-data/green_tripdata_%Y-%m.parquet"
+    green_urls = pd.date_range(start='2013-08', end='2013-09', freq='MS').strftime(green_trip_data_template)
+    green_name_parser = tripdata_parser_gen('trip-data/green/')
+
+    fhv_tripdata_template = "https://d37ci6vzurychx.cloudfront.net/trip-data/fhv_tripdata_%Y-%m.parquet"
+    fhv_urls = pd.date_range(start='2015-01', end='2015-02', freq='MS').strftime(fhv_tripdata_template)
+    fhv_name_parser = tripdata_parser_gen('trip-data/fhv/')
+    # from 2015-01
+
+    fhvhv_tripdata_template = "https://d37ci6vzurychx.cloudfront.net/trip-data/fhvhv_tripdata_%Y-%m.parquet"
+    fhvhv_urls = pd.date_range(start='2019-02', end='2019-03', freq='MS').strftime(fhvhv_tripdata_template)
+    fhvhv_name_parser = tripdata_parser_gen('trip-data/fhvhv/')
+    # from 2019-02
+
+    # list the file only and end the program
     if args.list:
-        # list the file only and end the program
-        print(urls)
+        pp(yellow_urls)
         exit(0)
 
     # load crediential
@@ -101,10 +123,16 @@ if __name__ == "__main__":
         access_key = config.get("AWS_ACCESS_KEY")
         secret = config.get("AWS_SECRET_KEY")
 
+    # Start uploading
     logging.info("Start Upload file")
-    results = upload_urls_parallel(urls, bucket_name)
-    logging.info(f"Finished Uploading;")
 
+    results = upload_urls_parallel(yellow_urls, bucket_name, yellow_name_parser)
+    results = upload_urls_parallel(green_urls, bucket_name, green_name_parser)
+    results = upload_urls_parallel(fhv_urls, bucket_name, fhv_name_parser)
+    results = upload_urls_parallel(fhvhv_urls, bucket_name, fhvhv_name_parser)
+
+    # End upload, log the result
+    logging.info(f"Finished Uploading;")
     logging.debug(f"Results: {results}")
 
 
