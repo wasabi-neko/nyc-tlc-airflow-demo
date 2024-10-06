@@ -4,12 +4,12 @@ import boto3, botocore
 from botocore.exceptions import ClientError
 import json
 import botocore.config
+import pandas as pd
 import requests
 import logging
 import argparse
 from io import BytesIO
 from tqdm.contrib.concurrent import thread_map
-from string import Template
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--debug', action='store_true', help='log in debug mode.')
@@ -90,11 +90,11 @@ if __name__ == "__main__":
         secret = config.get("AWS_SECRET_KEY")
 
     # year, month
-    year_range = range(2009, 2024)
-    month_range = range(1, 13)
-    url_template = Template('https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_$year-$month.parquet')
-    urls = [url_template.substitute(year=str(y), month=f"{m:02d}") for y in year_range for m in month_range]
     bucket_name = "nyc-tlc-demo"
+
+    yellow_trip_data_template = "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_%Y-%m.parquet"
+    urls = pd.date_range(start='2009-1', end='2024-07', freq='MS').strftime(yellow_trip_data_template)
+
 
     logging.info("Start Upload file")
     results = upload_urls_parallel(urls, bucket_name)

@@ -7,6 +7,7 @@ name = "pypi"
 boto3 = {extras = ["crt"], version = "*"}
 requests = "*"
 tqdm = "*"
+pandas = "*"
 
 [dev-packages]
 
