@@ -1,8 +1,7 @@
-secrects.json
-crawler/*.log
+*.log
 
-airflow/*.log
+secrects.json
+
 airflow/logs
 airflow/.env
-
 airflow/dags/__pycache__
