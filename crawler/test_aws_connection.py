@@ -3,10 +3,10 @@ import json
 
 
 # load crediential
-with open('./aws_secret_config.json') as file:
+with open('../secrects.json') as file:
     config = json.load(file)
-    access_key = config.get("ACCESS_KEY")
-    secret = config.get("SECRET_KEY")
+    access_key = config.get("AWS_ACCESS_KEY")
+    secret = config.get("AWS_SECRET_KEY")
 
 s3_client = boto3.client(
     's3',
