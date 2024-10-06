@@ -2,7 +2,7 @@ alter session set query_tag='nyc-tlc-demo-extable';
 
 
 use warehouse compute_large;
-CREATE TABLE yellow_final AS
+CREATE or replace TABLE yellow_final AS
 SELECT
     START_DATE,
     VENDOR_ID, vendor_name
