@@ -11,6 +11,11 @@ SNOWFLAKE_CONN_ID = 'snowflake_default'
 AWS_CONN_ID = 'aws_default'
 logger = logging.getLogger(__name__)
 
+def get_sql(file_name: str) -> str:
+    with open('/opt/airflow/dags/sql/' + file_name, 'r') as file:
+        sql_str = file.read()
+    return sql_str
+
 default_args = {
     'owner': 'anjung',
     'depends_on_past': False,
@@ -34,12 +39,9 @@ def dag_gen():
     start = EmptyOperator(task_id="start")
     end = EmptyOperator(task_id="end")
 
-    with open('/opt/airflow/dags/sql/load_taxi_zone.sql', 'r') as file:
-        load_taxi_sql = file.read()
-    with open('/opt/airflow/dags/sql/load_yellow_tripdata.sql', 'r') as file:
-        load_yellow_sql = file.read()
-    with open('/opt/airflow/dags/sql/join_taxi_zone.sql', 'r') as file:
-        join_taxi_sql = file.read()
+    load_taxi_sql = get_sql('copy_from_external_stage/load_taxi_zone.sql')
+    load_yellow_sql = get_sql('copy_from_external_stage/load_yellow_tripdata.sql')
+    join_taxi_sql = get_sql('copy_from_external_stage/join_taxi_zone.sql')
 
     load_taxi = SQLExecuteQueryOperator(
         task_id = "load_taxi_zone_from_s3",
