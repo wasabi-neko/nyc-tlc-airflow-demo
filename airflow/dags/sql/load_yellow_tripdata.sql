@@ -1,5 +1,4 @@
-
-alter session set query_tag='nyc-tlc-demo';
+alter session set query_tag = "{'project': 'nyc-tlc-demo', 'method': 'copy_from_external_stage'}";
 use schema nyc_tlc.public;
 use warehouse compute_large;
 
