@@ -34,7 +34,7 @@ def snowflake_test_api_v1():
 
     select_test = SQLExecuteQueryOperator(
         task_id = 'select_test',
-        sql = """SELECT * FROM TEST_DB.PUBLIC.TEST_TABLE"""
+        sql = """SELECT * FROM snowflake.account_usage.databases LIMIT 1;"""
     )
 
     start >> select_test >> end
