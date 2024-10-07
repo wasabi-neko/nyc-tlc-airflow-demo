@@ -1,3 +1,7 @@
+# conn_uri_gen.py
+# Connection URI generator script
+# It will generates the connection_uri for airflow using "secrects.json"
+
 import os, json
 from airflow.models.connection import Connection
 
