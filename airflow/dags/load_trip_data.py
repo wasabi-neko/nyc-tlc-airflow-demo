@@ -58,7 +58,7 @@ def dag_gen():
 
     project_name = "nyc-tlc-demo"
     ex_query_tag = get_query_tag_str(project_name, "external_stage")
-    in_query_tag = get_query_tag_str(project_name, "external_stage")
+    in_query_tag = get_query_tag_str(project_name, "internal_stage")
     other_query_tag = get_query_tag_str(project_name, "other")
 
 
