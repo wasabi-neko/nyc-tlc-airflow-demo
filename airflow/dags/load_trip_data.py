@@ -107,6 +107,28 @@ def dag_gen():
         warehouse=compute_large
     )
 
+    in_load_taxi = LoadTaxiOperator(
+        task_id = "in_load_taxi_zone_from_s3",
+        taxi_zone_table=in_taxi_zone,
+        query_tag=in_query_tag,
+        warehouse=compute_large,
+    )
+    in_load_yellow = LoadYellowExternalStage(
+        task_id = 'in_load_yellow_tripdata_from_s3',
+        yellow_table=in_yellow,
+        query_tag=in_query_tag,
+        warehouse=compute_large,
+    )
+    in_join_taxi = JoinTaxiDripdata(
+        task_id = 'in_join_taxi_zone_and_yellow',
+        result=in_final,
+        tripdata=in_yellow,
+        taxi_zone=in_taxi_zone,
+        query_tag=in_query_tag,
+        warehouse=compute_large
+    )
+
     start >> drop_table >> [ex_load_taxi, ex_load_yellow] >> ex_join_taxi >> end
+    start >> drop_table >> [in_load_taxi, in_load_yellow] >> in_join_taxi >> end
 
 nyc_dag = dag_gen()
