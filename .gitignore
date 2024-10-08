@@ -4,4 +4,4 @@ secrects.json
 
 airflow/logs
 airflow/.env
-airflow/dags/__pycache__
+__pycache__

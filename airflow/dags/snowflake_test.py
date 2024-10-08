@@ -5,7 +5,7 @@ from time import sleep
 from airflow.decorators import task, dag
 from airflow.operators.python import PythonOperator
 from airflow.operators.empty import EmptyOperator
-from airflow.providers.snowflake.operators.snowflake import SQLExecuteQueryOperator
+from airflow.providers.snowflake.operators.snowflake import SQLExecuteQueryOperator, SnowflakeSqlApiOperator
 
 SNOWFLAKE_CONN_ID = 'snowflake_default'
 logger = logging.getLogger(__name__)
@@ -34,7 +34,13 @@ def snowflake_test_api_v1():
 
     select_test = SQLExecuteQueryOperator(
         task_id = 'select_test',
-        sql = """SELECT * FROM snowflake.account_usage.databases LIMIT 1;"""
+        sql = """
+        SELECT * FROM snowflake.account_usage.databases LIMIT 1;
+        SELECT * FROM snowflake.account_usage.databases LIMIT 2;
+        SELECT * FROM snowflake.account_usage.databases LIMIT 3;
+        """,
+        split_statements=True,
+        # statement_count=3
     )
 
     start >> select_test >> end

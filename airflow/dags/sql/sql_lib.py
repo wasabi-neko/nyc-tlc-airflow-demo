@@ -1,32 +1,95 @@
-# set query_tag = {arg.tag}
-# use warehouse = {arg.warehouse}
+from airflow.providers.snowflake.operators.snowflake import SQLExecuteQueryOperator, SnowflakeSqlApiOperator
 
-# create external stage
-    # stage_name, tag, warehouse
-# create yellow table
-    # table name
-# copy into yellow table from external stage // same as internal stage
-    # table name, stage name
-# create taxi stage
-    #  stage name
-# create taxi table
-    # table name
-# join yellow & taxi table
-    # yellow table, taxi table
+from sql.load_taxi_zone_sql import get_sql_str as get_taxi_sqlstr
+from sql.load_yellow_tripdata_external_stage_sql import get_sql_str as get_yellow_exstage_sqlstr
+from sql.load_yellow_tripdata_internal_buffer_sql import get_sql_str as get_yellow_with_buffer_sqlstr
+from sql.join_taxi_zone_sql import get_sql_str as get_join_sqlstr
 
-# create external stage
-    # stage name
-# create internal stage
-    # stage name
-# copy file into internal stage from external stage
-    # in table, ex table
-# create yellow table
-# copy into yellow table fomr internal stage
-# create taxi table
-# create taxi table
-# join yellow & taxi table
+import logging
 
-# drop everything (stages, tables)
+DEFAULT_WAREHOUSE = 'COMPUTE_WH'
+DEFAULT_SCHEMA = 'NYC_TLC.public'
+DEFAULT_QUERY_TAG = '{"project": "nyc-tlc-demo", "type": "other"}'
+
+class LoadTaxiOperator(SQLExecuteQueryOperator):
+    def __init__(
+        self,
+        taxi_zone_table,
+        warehouse = DEFAULT_QUERY_TAG,
+        schema = DEFAULT_SCHEMA,
+        query_tag = DEFAULT_QUERY_TAG,
+        **kwargs
+    ) -> None:
+        logger = logging.getLogger(__name__)
+        logger.info(get_taxi_sqlstr(taxi_zone=taxi_zone_table, warehouse=warehouse, schema=schema, query_tag=query_tag))
+        super().__init__(
+            sql=get_taxi_sqlstr(taxi_zone=taxi_zone_table, warehouse=warehouse, schema=schema, query_tag=query_tag),
+            split_statements=True,
+            **kwargs
+        )
 
 
-# TODO: make each of them a custom airflow operator
+class LoadYellowExternalStage(SQLExecuteQueryOperator):
+    def __init__(
+        self,
+        yellow_table,
+        warehouse = DEFAULT_QUERY_TAG,
+        schema = DEFAULT_SCHEMA,
+        query_tag = DEFAULT_QUERY_TAG,
+        **kwargs
+    ) -> None:
+        super().__init__(
+            sql = get_yellow_exstage_sqlstr(
+                tripdata_table = yellow_table,
+                warehouse=warehouse,
+                schema=schema,
+                query_tag=query_tag
+            ),
+            split_statements=True,
+            **kwargs
+        )
+
+
+class LoadYellowInternaBuffer(SQLExecuteQueryOperator):
+    def __init__(
+        self,
+        yellow_table,
+        warehouse = DEFAULT_QUERY_TAG,
+        schema = DEFAULT_SCHEMA,
+        query_tag = DEFAULT_QUERY_TAG,
+        **kwargs
+    ) -> None:
+        super().__init__(
+            sql = get_yellow_with_buffer_sqlstr(
+                tripdata_table = yellow_table,
+                warehouse=warehouse,
+                schema=schema,
+                query_tag=query_tag
+            ),
+            split_statements=True,
+            **kwargs
+        )
+
+class JoinTaxiDripdata(SQLExecuteQueryOperator):
+    def __init__(
+        self,
+        result,
+        tripdata,
+        taxi_zone,
+        warehouse = DEFAULT_QUERY_TAG,
+        schema = DEFAULT_SCHEMA,
+        query_tag = DEFAULT_QUERY_TAG,
+        **kwargs
+    ) -> None:
+        super().__init__(
+            sql = get_join_sqlstr(
+                result=result,
+                tripdata=tripdata,
+                warehouse=warehouse,
+                taxi_zone=taxi_zone,
+                schema=schema,
+                query_tag=query_tag
+            ),
+            split_statements=True,
+            **kwargs
+        )
