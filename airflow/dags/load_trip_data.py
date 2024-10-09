@@ -20,7 +20,6 @@ def get_sql(file_name: str) -> str:
 
 default_args = {
     'owner': 'anjung',
-    'depends_on_past': False,
     'email': ['An.Jung@taodigitalsolutions.com'],
     'email_on_failure': False,
     'email_on_retry': False,
@@ -31,11 +30,13 @@ default_args = {
 }
 
 @dag(
-    dag_id='nyc-tlc-demo',
+    dag_id='nyc-tlc-demo-compare-v1',
     default_args=default_args,
     description='load trip data from s3',
     # start_date=datetime(2024, 10, 6),
     schedule=None,
+    max_active_runs=1,  # allow only one active run at a time
+    catchup=False,
     tags=['nyc-tlc-demo'])
 def dag_gen():
     
@@ -54,9 +55,11 @@ def dag_gen():
     end = EmptyOperator(task_id="end")
 
     compute_xs = "COMPUTE_WH"
-    compute_large = "COMPUTE_LARGE"
+    compute_large = "COMPUTE_XL"
+    in_compute_xl = "in_compute_xl"
+    ex_compute_xl = "ex_compute_xl"
 
-    project_name = "nyc-tlc-demo"
+    project_name = "nyc-tlc-demo-compare-v1"
     ex_query_tag = get_query_tag_str(project_name, "external_stage")
     in_query_tag = get_query_tag_str(project_name, "internal_stage")
     other_query_tag = get_query_tag_str(project_name, "other")
@@ -90,13 +93,13 @@ def dag_gen():
         task_id = "ex_load_taxi_zone_from_s3",
         taxi_zone_table=ex_taxi_zone,
         query_tag=ex_query_tag,
-        warehouse=compute_large,
+        warehouse=ex_compute_xl,
     )
     ex_load_yellow = LoadYellowExternalStage(
         task_id = 'ex_load_yellow_tripdata_from_s3',
         yellow_table=ex_yellow,
         query_tag=ex_query_tag,
-        warehouse=compute_large,
+        warehouse=ex_compute_xl,
     )
     ex_join_taxi = JoinTaxiDripdata(
         task_id = 'ex_join_taxi_zone_and_yellow',
@@ -104,20 +107,20 @@ def dag_gen():
         tripdata=ex_yellow,
         taxi_zone=ex_taxi_zone,
         query_tag=ex_query_tag,
-        warehouse=compute_large
+        warehouse=ex_compute_xl
     )
 
     in_load_taxi = LoadTaxiOperator(
         task_id = "in_load_taxi_zone_from_s3",
         taxi_zone_table=in_taxi_zone,
         query_tag=in_query_tag,
-        warehouse=compute_large,
+        warehouse=in_compute_xl,
     )
-    in_load_yellow = LoadYellowExternalStage(
+    in_load_yellow = LoadYellowInternaBuffer(
         task_id = 'in_load_yellow_tripdata_from_s3',
         yellow_table=in_yellow,
         query_tag=in_query_tag,
-        warehouse=compute_large,
+        warehouse=in_compute_xl,
     )
     in_join_taxi = JoinTaxiDripdata(
         task_id = 'in_join_taxi_zone_and_yellow',
@@ -125,7 +128,7 @@ def dag_gen():
         tripdata=in_yellow,
         taxi_zone=in_taxi_zone,
         query_tag=in_query_tag,
-        warehouse=compute_large
+        warehouse=in_compute_xl
     )
 
     start >> drop_table >> [ex_load_taxi, ex_load_yellow] >> ex_join_taxi >> end
