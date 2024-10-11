@@ -19,10 +19,11 @@ order by
     try_parse_json(query_tag)['dag_timestamp'] desc
 ;
 
+-- list execute time group by type
 select
     count(QUERY_ID),
     try_parse_json(query_tag)['type']::string as query_type,
-    SUM(total_elapsed_time) as sum_total_elaspe_time_ms,
+    -- SUM(total_elapsed_time) as sum_total_elaspe_time_ms,
     timediff(second, min(start_time), MAX(end_time)) as real_duration_sec,
     CAST(try_parse_json(query_tag)['dag_timestamp'] AS datetime)as dag_timestamp,
     MIN(start_time),
