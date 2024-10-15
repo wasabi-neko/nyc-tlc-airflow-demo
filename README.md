@@ -25,7 +25,7 @@ nyc-tlc-airflow-demo
 
 ## Run
 
-### pre-requirements
+### Prerequisites
 
 Packages:
 
@@ -56,6 +56,7 @@ Optional:
 Init the Airflow
 
 ```shell
+# inside ./airflow dir
 docker compose up airflow-init
 ```
 
@@ -68,7 +69,7 @@ docker compose up
 
 And thats it! Every thing should be up and running.
 
-The Airflow Webserver should be visible at `localhost:8080`
+The Airflow Webserver should be visible at `localhost:8080` by default
 
 For more information about the Airflow with docker compose see: [airflow/howto/docker-compose](https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html)
 
