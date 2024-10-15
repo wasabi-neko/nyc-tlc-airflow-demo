@@ -1,3 +1,7 @@
+"""
+Test the connection of boto3
+"""
+
 import boto3
 import json
 

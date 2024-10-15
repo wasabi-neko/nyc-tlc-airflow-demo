@@ -1,3 +1,10 @@
+"""
+aws_s3_test.py
+
+Test the aws s3 connection with Ariflow by running simple S3 list operator
+"""
+
+
 import logging
 from datetime import datetime, timedelta
 from pprint import pp

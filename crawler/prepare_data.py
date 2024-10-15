@@ -91,9 +91,10 @@ def tripdata_parser_gen(prefix: str)-> Callable[[str], str]:
 if __name__ == "__main__":
     print(args)
 
-    # year, month
+    # S3 Bucket_name
     bucket_name = "nyc-tlc-demo"
 
+    # Prepare the file URL
     yellow_trip_data_template = "https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_%Y-%m.parquet"
     yellow_urls = pd.date_range(start='2009-01', end='2024-07', freq='MS').strftime(yellow_trip_data_template)
     yellow_name_parser = tripdata_parser_gen('trip-data/yellow/')
@@ -105,14 +106,12 @@ if __name__ == "__main__":
     fhv_tripdata_template = "https://d37ci6vzurychx.cloudfront.net/trip-data/fhv_tripdata_%Y-%m.parquet"
     fhv_urls = pd.date_range(start='2015-01', end='2024-07', freq='MS').strftime(fhv_tripdata_template)
     fhv_name_parser = tripdata_parser_gen('trip-data/fhv/')
-    # from 2015-01
 
     fhvhv_tripdata_template = "https://d37ci6vzurychx.cloudfront.net/trip-data/fhvhv_tripdata_%Y-%m.parquet"
     fhvhv_urls = pd.date_range(start='2019-02', end='2024-07', freq='MS').strftime(fhvhv_tripdata_template)
     fhvhv_name_parser = tripdata_parser_gen('trip-data/fhvhv/')
-    # from 2019-02
 
-    # list the file only and end the program
+    # list the file only and end the program (Using --list)
     if args.list:
         pp(yellow_urls)
         exit(0)

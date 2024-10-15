@@ -1,3 +1,10 @@
+"""
+snowflake_test.py
+
+Test the Snowflake connection with Airflow by using simple snowflake query operator to
+run sql command: `SELECT * FROM snowflake.account_usage.databases LIMIT 1;`
+"""
+
 import logging
 from datetime import datetime, timedelta
 from pprint import pp

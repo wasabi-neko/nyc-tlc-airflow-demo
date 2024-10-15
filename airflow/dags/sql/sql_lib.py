@@ -1,3 +1,11 @@
+"""
+sql_lib.py
+
+This module creates custom Airflow operator that provide an SQL parameter interface
+for executing my predefined SQLs.
+"""
+
+
 from airflow.providers.snowflake.operators.snowflake import SQLExecuteQueryOperator, SnowflakeSqlApiOperator
 
 from sql.load_taxi_zone_sql import get_sql_str as get_taxi_sqlstr
