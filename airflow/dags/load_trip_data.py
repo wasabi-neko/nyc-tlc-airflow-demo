@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 
 default_args = {
     'owner': 'anjung',
-    'email': ['An.Jung@taodigitalsolutions.com'],
     'email_on_failure': False,
     'email_on_retry': False,
     'retries': 1,
