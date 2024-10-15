@@ -1,7 +1,10 @@
-*.log
-
+# secrects
 secrects.json
-
-airflow/logs
 airflow/.env
+
+# pycache  
 __pycache__
+
+# logs
+*.log
+airflow/logs
