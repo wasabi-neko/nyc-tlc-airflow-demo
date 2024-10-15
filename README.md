@@ -45,8 +45,9 @@ Optional:
 
 ### Set-ups
 
-- Set up the snowflake connection with AWS S3
-    - you can follow [this guid]
+- prepare the cridientials in `secrets.json`
+- set up the snowflake connection with AWS S3
+    - you can follow [this guide](https://docs.snowflake.com/en/user-guide/data-load-s3-config)
 - run the crawler `crawler/prepare_data.py` to upload the _NYC-TLC_ data to S3 bucket
 - run the `airflow/conn_uri_gen.py` and copy the secret uri to `airflow/.env`
 
@@ -86,7 +87,7 @@ More information about the data can be found on [nyc official website](https://w
 
 ## S3 bucket structure
 
-I fetch the files from [offical website](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page) via my script 
+I fetch the files from [nyc offical website](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page) via my script 
 `crawler/prepare_data.python`
 
 The reslut will be looks like something like this:
@@ -130,3 +131,5 @@ transformation 2: join taxi_zone_lookup with locationID
 merge_all_table: merge all from yellow, green, fhv
 remove file in local stage
 ```
+
+use `sql-files/query_query_history.sql` to see the query execution time and compare the two methods.
