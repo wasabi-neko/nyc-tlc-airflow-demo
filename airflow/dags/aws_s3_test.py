@@ -7,10 +7,7 @@ Test the aws s3 connection with Ariflow by running simple S3 list operator
 
 import logging
 from datetime import datetime, timedelta
-from pprint import pp
-from time import sleep
-from airflow.decorators import task, dag
-from airflow.operators.python import PythonOperator
+from airflow.decorators import dag
 from airflow.operators.empty import EmptyOperator
 from airflow.providers.amazon.aws.operators.s3 import S3ListOperator
 

@@ -1,22 +1,22 @@
+"""
+load_trip_data.py
+
+The main DAG of this project
+"""
+
 import json
 import logging
 from datetime import datetime, timedelta
 from pprint import pp
 from airflow.decorators import task, dag
-from airflow.operators.python import PythonOperator
 from airflow.operators.empty import EmptyOperator
 from airflow.providers.snowflake.operators.snowflake import SQLExecuteQueryOperator 
-from airflow.providers.amazon.aws.operators.s3 import S3ListOperator
 from sql.sql_lib import LoadTaxiOperator, LoadYellowExternalStage, LoadYellowInternaBuffer, JoinTaxiDripdata
 
 SNOWFLAKE_CONN_ID = 'snowflake_default'
 AWS_CONN_ID = 'aws_default'
 logger = logging.getLogger(__name__)
 
-def get_sql(file_name: str) -> str:
-    with open('/opt/airflow/dags/sql/' + file_name, 'r') as file:
-        sql_str = file.read()
-    return sql_str
 
 default_args = {
     'owner': 'anjung',
@@ -61,6 +61,10 @@ def dag_gen():
 
     @task(task_id="generate_unique_query_tag", multiple_outputs=True)
     def generate_unique_query_tag(project_name, **kwargs):
+        """
+        Generate the unique query tag for every DAG run instance.
+        Push the result to Airflow Xcom, allowing other tasks to pull from
+        """
         dag_time_stamp = datetime.now().timestamp()
         def _get_query_tag_str(project_name, _type):
             return "'" + json.dumps(

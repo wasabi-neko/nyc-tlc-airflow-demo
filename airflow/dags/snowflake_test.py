@@ -7,12 +7,9 @@ run sql command: `SELECT * FROM snowflake.account_usage.databases LIMIT 1;`
 
 import logging
 from datetime import datetime, timedelta
-from pprint import pp
-from time import sleep
-from airflow.decorators import task, dag
-from airflow.operators.python import PythonOperator
+from airflow.decorators import dag
 from airflow.operators.empty import EmptyOperator
-from airflow.providers.snowflake.operators.snowflake import SQLExecuteQueryOperator, SnowflakeSqlApiOperator
+from airflow.providers.snowflake.operators.snowflake import SQLExecuteQueryOperator
 
 SNOWFLAKE_CONN_ID = 'snowflake_default'
 logger = logging.getLogger(__name__)

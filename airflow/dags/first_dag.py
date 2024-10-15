@@ -4,7 +4,6 @@ from datetime import datetime, timedelta
 from pprint import pp
 from time import sleep
 from airflow.decorators import task, dag
-from airflow.operators.python import PythonOperator
 
 logger = logging.getLogger(__name__)
 
