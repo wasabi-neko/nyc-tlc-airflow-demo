@@ -44,7 +44,7 @@ def dag_gen():
     in_compute_xl = "in_compute_xl"
     ex_compute_xl = "ex_compute_xl"
 
-    project_name = "nyc-tlc-load-vs"
+    project_name = "nyc-tlc-load-v2"
 
     ex_taxi_zone = "ex_taxi_zone"
     ex_yellow = "ex_yellow_tripdata"
