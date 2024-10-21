@@ -113,6 +113,17 @@ nyc-tlc-demo
 
 ## Workflow
 
+```mermaid
+graph LR;
+s[start] --> trip[load & unify trip data from S3 to snowflake];
+s --> taxi[load taxi_zone.csv to snowflake]
+trip --> join[join the trip data and taxi_zone]
+taxi --> join
+join --> e[end]
+```
+
+### Compare
+
 Method1: Copy data from external table
 
 ```
