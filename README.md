@@ -7,12 +7,12 @@ A data pipe line demo with NYC-TLC data, doing ELT from AWS S3 to Snowflake and 
 ```
 nyc-tlc-airflow-demo
 ├───secrects.json
-├───airflow
+├───airflow/
 |   ├───.env
-│   └───dags
+│   └───dags/
 │       └───sql
-├───crawler
-└───sql-files
+├───crawler/
+└───sql-files/
 ```
 
 - `secrects.json`: containg the secrects crediential of Snowflake and AWS
