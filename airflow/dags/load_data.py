@@ -1,7 +1,7 @@
 """
-load_trip_data.py
+load_data.py
 
-The main DAG of this project
+load the data from AWS S3 Bukect to snowflake then do some transformatoins
 """
 
 import json
@@ -29,7 +29,7 @@ default_args = {
 }
 
 @dag(
-    dag_id='nyc-tlc-demo-compare-v2',
+    dag_id='nyc-tlc-load-v2',
     default_args=default_args,
     description='load trip data from s3',
     # start_date=datetime(2024, 10, 6),
@@ -44,7 +44,7 @@ def dag_gen():
     in_compute_xl = "in_compute_xl"
     ex_compute_xl = "ex_compute_xl"
 
-    project_name = "nyc-tlc-demo-compare-v2"
+    project_name = "nyc-tlc-load-vs"
 
     ex_taxi_zone = "ex_taxi_zone"
     ex_yellow = "ex_yellow_tripdata"
@@ -75,8 +75,7 @@ def dag_gen():
             ) + "'"
 
         return {
-            "ex_query_tag": _get_query_tag_str(project_name, "external_stage"),
-            "in_query_tag": _get_query_tag_str(project_name, "internal_stage"),
+            "ex_query_tag": _get_query_tag_str(project_name, "loading"),
             "other_query_tag": _get_query_tag_str(project_name, "other"),
         }
 
@@ -119,29 +118,7 @@ def dag_gen():
         warehouse=ex_compute_xl
     )
 
-    in_load_taxi = LoadTaxiOperator(
-        task_id = "in_load_taxi_zone_from_s3",
-        taxi_zone_table=in_taxi_zone,
-        query_tag=tag_gen['in_query_tag'],
-        warehouse=in_compute_xl,
-    )
-    in_load_yellow = LoadYellowInternaBuffer(
-        task_id = 'in_load_yellow_tripdata_from_s3',
-        yellow_table=in_yellow,
-        query_tag=tag_gen['in_query_tag'],
-        warehouse=in_compute_xl,
-    )
-    in_join_taxi = JoinTaxiDripdata(
-        task_id = 'in_join_taxi_zone_and_yellow',
-        result=in_final,
-        tripdata=in_yellow,
-        taxi_zone=in_taxi_zone,
-        query_tag=tag_gen['in_query_tag'],
-        warehouse=in_compute_xl
-    )
-
     start >> tag_gen >> drop_table
     drop_table >> [ex_load_taxi, ex_load_yellow] >> ex_join_taxi >> end
-    drop_table >> [in_load_taxi, in_load_yellow] >> in_join_taxi >> end
 
 nyc_dag = dag_gen()
