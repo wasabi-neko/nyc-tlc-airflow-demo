@@ -39,7 +39,7 @@ COPY INTO {tripdata}(
 FROM (
     SELECT
         -- START_DATE
-        TO_DATE(REGEXP_SUBSTR(METADATA$FILENAME, '\\D{{4}}-\\D{{2}}'), 'YYYY-MM'),
+        TO_DATE(REGEXP_SUBSTR(METADATA$FILENAME, '\\\\d{{4}}-\\\\d{{2}}'), 'YYYY-MM'),
 
         -- PICKUP_DATETIME
         TO_DATE(
