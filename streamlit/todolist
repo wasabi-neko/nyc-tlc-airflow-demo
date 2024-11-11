@@ -1,0 +1,11 @@
+- geographical heatmap  over time
+	- with geopandas and contextiy
+	- hourly, weekly, annually
+- passenger couunt of different taxi type changes overtime.
+	- Note: needs to import other type of taxi data first
+	- maybe needs a lot of effort.
+		- check file format of other taxi type
+		- write sql python files for other taxi type
+		- the rest of the operation should be the same
+
+
